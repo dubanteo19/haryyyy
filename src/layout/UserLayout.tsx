@@ -6,7 +6,7 @@ export const UserLayout = () => {
   return (
     <div className="flex flex-col p-4  min-h-screen  w-full  bg-primary">
       <Header />
-      <main className="flex-1 px-4 max-w-screen mx-auto w-full  ">
+      <main className="flex-1 px-0 md:px-4 max-w-screen mx-auto w-full  ">
         <Outlet />
       </main>
       <Footer />

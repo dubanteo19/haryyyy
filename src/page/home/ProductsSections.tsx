@@ -12,7 +12,7 @@ export const ProductsSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="works"
-      className="bg-pink-50 py-16 px-6 mt-10 min-h-screen relative overflow-hidden "
+      className="bg-pink-50 py-16 px-3  md:px-6 mt-10 min-h-screen relative overflow-hidden "
     >
       {isInView &&
         Array.from({ length: 100 }).map((_, i) => (
