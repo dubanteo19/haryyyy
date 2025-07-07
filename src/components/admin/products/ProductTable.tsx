@@ -22,7 +22,7 @@ export const ProductTable = () => {
   useEffect(() => {
     setProducts(data);
   }, [data]);
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState<ProductSaveType>(initialForm);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const { mutate, loading: isMutating } = useGoogleSheetMutation();
   const handleDelete = async (id: number) => {

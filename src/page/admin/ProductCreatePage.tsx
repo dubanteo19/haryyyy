@@ -4,9 +4,9 @@ import { useGoogleSheetMutation } from "@/hooks/useGoogleSheetMutation";
 import type { Product } from "@/type/product";
 import { useState } from "react";
 import { toast } from "sonner";
-export type ProductSaveType = Partial<Pick<Product, "id">> &
-  Omit<Product, "id">;
+export type ProductSaveType = Product;
 const initialForm: ProductSaveType = {
+  id: 0,
   title: "",
   image: "",
   link: "",
@@ -27,7 +27,7 @@ export const ProductCreatePage = () => {
     }
   };
   return (
-    <div className="flex justify-between">
+    <div className="flex flex-col md:flex-row justify-between">
       <ProductForm
         loading={loading}
         formState={[form, setForm]}

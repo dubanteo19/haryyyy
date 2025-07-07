@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Loader } from "lucide-react";
 import type { ReactNode } from "react";
 type WidgetColor = keyof typeof gradientMap;
 export interface AnalyticsWidgetSummaryProps {
@@ -29,7 +30,13 @@ export const AnalyticsWidgetSummary: React.FC<AnalyticsWidgetSummaryProps> = ({
       )}
     >
       <h2 className="my-2 font-bold text-base  md:text-2xl">{title}</h2>
-      <p className={cn(" font-bold  text-right text-2xl md:text-5xl")}>{total}</p>
+      {total > 0 ? (
+        <p className={cn(" font-bold  text-right text-2xl md:text-5xl")}>
+          {total}
+        </p>
+      ) : (
+        <Loader className=" animate-spin" />
+      )}
       <div className="absolute bottom-2 left-3 -rotate-35 text-gray-100/15">
         {icon}
       </div>

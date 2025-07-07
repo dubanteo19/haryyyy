@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 import {
-  adminSideBarData,
-  type SideBarLinkItemProps,
+    adminSideBarData,
+    type SideBarLinkItemProps,
 } from "@/page/data/adminSidebarData";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ImageContainer } from "../common/ImageContainer";
