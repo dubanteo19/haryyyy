@@ -1,11 +1,10 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
+import type { Type } from "./useGoogleSheetMutation";
 
 const ID =
   "AKfycbxVqSYSJENG7nglZREGSpEkkDE-ydm-41CBGInq11AhpnMPxrFZZBRuSASotT8aK-GYOg";
 export const BASE_URL = `https://script.google.com/macros/s/${ID}/exec`;
-
-type Type = "products" | "contacts" | "works" | "login" | "stats";
 
 export function useGoogleSheetData<T = unknown>(type: Type) {
   const [data, setData] = useState<T[]>([]);

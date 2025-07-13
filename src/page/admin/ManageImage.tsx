@@ -1,40 +1,65 @@
-import { ImageContainer } from "@/components/common/ImageContainer";
-import type { Image } from "@/type/image";
-import type { FC } from "react";
-const ImageItem: FC<Image> = ({ id, url, size, name }) => {
-  return (
-    <div className="flex flex-col border p-2 rounded-2xl">
-      <ImageContainer className="w-[200px]" src={url} />
-      <div className="">
-        <p>Id: {id}</p>
-        <p>Ten: {name}</p>
-        <p>Kich thuoc: {size}</p>
-      </div>
-    </div>
-  );
-};
+import { ImageGallery } from "@/components/admin/images/ImageGallery";
+import ImageUploader from "@/components/admin/images/ImageUploader";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useGoogleSheetMutation } from "@/hooks/useGoogleSheetMutation";
+import { useState } from "react";
+import { toast } from "sonner";
 export const ManageImage = () => {
-  const images: Image[] = [
-    {
-      id: 1,
-      name: "abc",
-      size: 10000,
-      url: "https://cdn.jsdelivr.net/gh/dubanteo19/cdn@1.0.0/images/685e02a0-e3f8-484f-a551-9542016e64.png",
-    },
-    {
-      id: 2,
-      name: "abc",
-      size: 10000,
-      url: "https://cdn.jsdelivr.net/gh/dubanteo19/cdn@1.0.0/images/685e02a0-e3f8-484f-a551-9542016e64.png",
-    },
-  ];
+  const { mutate: deleteImage } = useGoogleSheetMutation();
+  const [selectedImageId, setselectedImageId] = useState<string>("");
+  const handleClickDeleteImage = (id: string) => {
+    setselectedImageId(id);
+  };
+  const handleConfirmDeleteImage = async () => {
+    if (!selectedImageId) return;
+    try {
+      await deleteImage({
+        type: "images",
+        id: selectedImageId,
+        method: "DELETE",
+        payload: { id: selectedImageId },
+      });
+      toast.success("Xóa hình ảnh thành công");
+      setselectedImageId("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="px-4">
-      <h2 className="text-2xl font-bold">Quản lý hình ảnh</h2>
-      <div className="flex flex-wrap gap-2">
-        {images &&
-          images.map((image) => <ImageItem key={image.id} {...image} />)}
-      </div>
+      <ImageUploader />
+      <ImageGallery
+        onClickDelete={handleClickDeleteImage}
+      />
+      <AlertDialog
+        open={selectedImageId != ""}
+        onOpenChange={() => setselectedImageId("")}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bạn chắc chưa?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn đang xóa hình ảnh {selectedImageId} Một khi đã xóa thì không
+              thể khôi phục lại được
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDeleteImage}>
+              Xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
