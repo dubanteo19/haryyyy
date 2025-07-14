@@ -13,6 +13,5 @@ export const ManageProduct = () => {
         </Link>
       </div>
       <ProductTable />
-    </div>
-  );
+    </div>);
 };

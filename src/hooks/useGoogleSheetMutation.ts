@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { BASE_URL } from "./useGoogleSheet";
-type Type = "products" | "contacts" | "works" | "login";
+export type Type = "products" | "contacts" | "works" | "login" | "images";
 type Method = "POST" | "PUT" | "DELETE";
 interface MutationOptions<T> {
   type: Type;

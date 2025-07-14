@@ -12,9 +12,9 @@ export const HomePage = () => {
   return (
     <div>
       <HeroSection />
+      <ProductsSection />
       <AboutSection />
       <WorksSection />
-      <ProductsSection />
       <ContactSection />
     </div>
   );

@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/ui/ProductCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useGoogleSheetData } from "@/hooks/useGoogleSheet";
 import type { Product } from "@/type/product";
 import { motion, useInView } from "motion/react";
@@ -41,12 +42,14 @@ export const ProductsSection: React.FC = () => {
           <h2 className="text-3xl font-bold text-center text-pink-600 ">
             Support me
           </h2>
-          <p className=" text-center text-gray-500 italic">
-            Ủng hộ nha mấy ní !!!
-          </p>
         </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-          {data && data.map((p) => <ProductCard key={p.id} {...p} />)}
+          {data.length > 0
+            ? data.map((p) => <ProductCard key={p.id} {...p} />)
+            : Array.from({ length: 6 }).map((_, index) => (
+                <Skeleton className="w-full h-[200px]" key={index} />
+              ))}
         </div>
       </div>
     </section>

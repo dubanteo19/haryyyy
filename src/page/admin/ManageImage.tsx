@@ -1,40 +1,64 @@
-import { ImageContainer } from "@/components/common/ImageContainer";
+import { ImageGallery } from "@/components/admin/images/ImageGallery";
+import ImageUploader from "@/components/admin/images/ImageUploader";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { DeleteDialog } from "@/components/ui/deleteDialog";
+import { FullLoader } from "@/components/ui/full-loader";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGoogleSheetData } from "@/hooks/useGoogleSheet";
+import { useGoogleSheetMutation } from "@/hooks/useGoogleSheetMutation";
 import type { Image } from "@/type/image";
-import type { FC } from "react";
-const ImageItem: FC<Image> = ({ id, url, size, name }) => {
-  return (
-    <div className="flex flex-col border p-2 rounded-2xl">
-      <ImageContainer className="w-[200px]" src={url} />
-      <div className="">
-        <p>Id: {id}</p>
-        <p>Ten: {name}</p>
-        <p>Kich thuoc: {size}</p>
-      </div>
-    </div>
-  );
-};
+import { useState } from "react";
+import { toast } from "sonner";
 export const ManageImage = () => {
-  const images: Image[] = [
-    {
-      id: 1,
-      name: "abc",
-      size: 10000,
-      url: "https://cdn.jsdelivr.net/gh/dubanteo19/cdn@1.0.0/images/685e02a0-e3f8-484f-a551-9542016e64.png",
-    },
-    {
-      id: 2,
-      name: "abc",
-      size: 10000,
-      url: "https://cdn.jsdelivr.net/gh/dubanteo19/cdn@1.0.0/images/685e02a0-e3f8-484f-a551-9542016e64.png",
-    },
-  ];
+  const { mutate: deleteImage, loading: isDeleting } = useGoogleSheetMutation();
+  const { data, refetch, loading } = useGoogleSheetData<Image>("images");
+  const [selectedImageId, setselectedImageId] = useState<string>("");
+  const handleClickDeleteImage = (id: string) => {
+    setselectedImageId(id);
+  };
+  const handleConfirmDeleteImage = async () => {
+    if (!selectedImageId) return;
+    try {
+      await deleteImage({
+        type: "images",
+        id: selectedImageId,
+        method: "DELETE",
+        payload: { id: selectedImageId },
+      });
+      toast.success("Xóa hình ảnh thành công");
+      setselectedImageId("");
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="px-4">
-      <h2 className="text-2xl font-bold">Quản lý hình ảnh</h2>
-      <div className="flex flex-wrap gap-2">
-        {images &&
-          images.map((image) => <ImageItem key={image.id} {...image} />)}
-      </div>
+      {isDeleting && <FullLoader />}
+      <ImageUploader callback={() => refetch()} />
+      {!loading ? (
+        <ImageGallery data={data} onClickDelete={handleClickDeleteImage} />
+      ) : (
+        <Skeleton className="h-[400px] w-full mt-5" />
+      )}
+      <AlertDialog
+        open={selectedImageId != ""}
+        onOpenChange={() => setselectedImageId("")}
+      >
+        <DeleteDialog
+          target={selectedImageId}
+          onClickConfirm={handleConfirmDeleteImage}
+        />
+      </AlertDialog>
     </div>
   );
 };

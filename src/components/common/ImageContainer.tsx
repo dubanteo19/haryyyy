@@ -7,7 +7,7 @@ interface ImageContainerProps {
 }
 export const ImageContainer: FC<ImageContainerProps> = ({ src, className }) => {
   return (
-    <div className={cn("overflow-hidden", className)}>
+    <div className={cn("w-full  h-full overflow-hidden", className)}>
       <img className="w-full h-full object-cover" src={src} />
     </div>
   );

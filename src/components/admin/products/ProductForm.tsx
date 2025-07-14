@@ -23,15 +23,13 @@ export const ProductForm: FC<ProductFormProps> = ({
     <div className="flex justify-between w-full ">
       <form
         onSubmit={handleSubmit}
-        className="max-w-md p-4 bg-white rounded shadow space-y-4 grow flex-1 w-full"
+        className=" p-4 bg-white rounded shadow space-y-4 grow  w-full"
       >
         <h2 className="text-lg font-semibold">
           {type == "create" ? "Thêm" : "Cập nhập"} sản phẩm
         </h2>
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Tiêu đề sản phẩm
-          </label>
+          <label className="block text-sm font-medium mb-1">Tên sản phẩm</label>
           <input
             name="title"
             value={form.title}
@@ -40,8 +38,7 @@ export const ProductForm: FC<ProductFormProps> = ({
             className="w-full px-3 py-2 border rounded"
           />
         </div>
-
-        <div>
+        <div className="hidden">
           <label className="block text-sm font-medium mb-1">Image URL</label>
           <input
             name="image"
