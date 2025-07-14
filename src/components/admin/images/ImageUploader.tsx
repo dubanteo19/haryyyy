@@ -2,18 +2,20 @@ import { Button } from "@/components/ui/button";
 import { useGoogleSheetMutation } from "@/hooks/useGoogleSheetMutation";
 import { compressFile, formatSize } from "@/lib/utils";
 import type { CloudinaryUploadResponse, Image } from "@/type/image";
-import { UploadIcon } from "lucide-react";
-import { useState, type ChangeEvent } from "react";
+import { Loader, UploadIcon } from "lucide-react";
+import { useState, type ChangeEvent, type FC } from "react";
 
 const CLOUD_NAME = "dgg9llvxu";
 const UPLOAD_PRESET = "haryle_present";
 const FOLDER = "assets";
 
-function ImageUploader() {
+interface ImageUploaderProps {
+  callback: () => void;
+}
+const ImageUploader: FC<ImageUploaderProps> = ({ callback }) => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadedUrl, setUploadedUrl] = useState("");
   const { mutate: insertImageRow } = useGoogleSheetMutation();
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -43,7 +45,6 @@ function ImageUploader() {
       },
     );
     const data: CloudinaryUploadResponse = await res.json();
-    setUploadedUrl(data.secure_url);
     const payload: Image = {
       id: data.public_id,
       name: data.original_filename,
@@ -53,12 +54,13 @@ function ImageUploader() {
     };
     await insertImageRow({ method: "POST", type: "images", payload });
     setIsUploading(false);
+    callback();
+    reset();
   };
 
   const reset = () => {
     setFile(null);
     setPreview("");
-    setUploadedUrl("");
   };
   return (
     <div className="max-w-md mx-auto gap-4 p-4 rounded-xl border border-gray-200 shadow-md bg-white">
@@ -102,20 +104,18 @@ function ImageUploader() {
             disabled={isUploading}
             className="w-full my-2 text-black  py-2  transition "
           >
-            {isUploading ? "Uploading" : "Upload"}
+            {isUploading ? (
+              <span className="flex">
+                <Loader className="animate-spin" /> Uploading
+              </span>
+            ) : (
+              "Upload"
+            )}
           </Button>
         </div>
       )}
-      {uploadedUrl && (
-        <p className="text-sm text-green-600 break-all">
-          ✅ Uploaded! URL:{" "}
-          <a href={uploadedUrl} className="underline">
-            {uploadedUrl}
-          </a>
-        </p>
-      )}
     </div>
   );
-}
+};
 
 export default ImageUploader;

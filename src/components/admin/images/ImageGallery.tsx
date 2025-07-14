@@ -1,9 +1,7 @@
 import { ImageContainer } from "@/components/common/ImageContainer";
-import { Button } from "@/components/ui/button";
-import { useGoogleSheetData } from "@/hooks/useGoogleSheet";
 import { cn, formatDate, formatSize } from "@/lib/utils";
 import type { Image } from "@/type/image";
-import { CheckIcon, Loader, TrashIcon } from "lucide-react";
+import { CheckIcon, TrashIcon } from "lucide-react";
 import { useState, type FC } from "react";
 
 export const ImageItem: FC<
@@ -44,8 +42,8 @@ export const ImageGallery: FC<{
   callback?: (url: string) => void;
   onClickDelete?: (id: string) => void;
   detail?: boolean;
-}> = ({ callback, detail = true, onClickDelete }) => {
-  const { data, refetch, loading } = useGoogleSheetData<Image>("images");
+  data: Image[];
+}> = ({ callback, detail = true, onClickDelete, data }) => {
   const [selectedImage, setselectedImage] = useState<string>("");
   const handleClickImage = (url: string) => {
     const newSelection = url == selectedImage ? "" : url;
@@ -55,10 +53,7 @@ export const ImageGallery: FC<{
   return (
     <div className="mt-4 border rounded p-2 ">
       <h2 className="text-center font-bold text-xl">Thư viện hình ảnh</h2>
-      <Button onClick={() => refetch()}>
-        {loading ? <p><Loader className="animate-spin"/></p> : "Tải lại"}
-      </Button>
-      {data.length > 0 ? (
+      {
         <div>
           <p>({data.length}) Hình ảnh</p>
           <div className="flex flex-wrap gap-2  ">
@@ -86,9 +81,7 @@ export const ImageGallery: FC<{
             ))}
           </div>
         </div>
-      ) : (
-        <Loader className="animate-spin" />
-      )}
+      }
     </div>
   );
 };

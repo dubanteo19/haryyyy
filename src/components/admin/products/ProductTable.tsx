@@ -10,6 +10,10 @@ import { toast } from "sonner";
 import { ProductForm } from "./ProductForm";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { AlertDialog } from "@/components/ui/alert-dialog";
+import { DeleteDialog } from "@/components/ui/deleteDialog";
+import { ImageGallery } from "../images/ImageGallery";
+import { type Image } from "@/type/image";
 const initialForm: ProductSaveType = {
   title: "",
   image: "",
@@ -24,20 +28,28 @@ export const ProductTable = () => {
   }, [data]);
   const [form, setForm] = useState<ProductSaveType>(initialForm);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const { mutate, loading: isMutating } = useGoogleSheetMutation();
-  const handleDelete = async (id: number) => {
+  const handleConfirmDelete = async () => {
     try {
       await mutate({
         method: "DELETE",
-        id: String(id),
+        id: String(selectedId),
         type: "products",
-        payload: { id },
+        payload: { id: selectedId },
       });
       toast.success("Xóa sản phẩm thành công");
-      setProducts((prev) => prev?.filter((product) => product.id !== id) || []);
+      setProducts(
+        (prev) =>
+          prev?.filter((product) => product.id !== Number(selectedId)) || [],
+      );
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleDelete = (id: number) => {
+    setSelectedId(String(id));
   };
   const handleEditProduct = (product: Product) => {
     setEditProduct(product);
@@ -64,6 +76,7 @@ export const ProductTable = () => {
       console.log(error);
     }
   };
+  const { data: images } = useGoogleSheetData<Image>("images");
   if (loading || isMutating) return <Loader className="mx-auto animate-spin" />;
   return (
     <div className="px-4">
@@ -121,6 +134,15 @@ export const ProductTable = () => {
         open={editProduct != null}
         onOpenChange={() => setEditProduct(null)}
       >
+        <AlertDialog
+          open={selectedId != null}
+          onOpenChange={() => setSelectedId(null)}
+        >
+          <DeleteDialog
+            target={"Sản phẩm"}
+            onClickConfirm={handleConfirmDelete}
+          />
+        </AlertDialog>
         <DialogContent className="min-w-[1000px] ">
           <DialogTitle>
             <DialogHeader>Hộp thoại</DialogHeader>
@@ -144,6 +166,12 @@ export const ProductTable = () => {
               )}
             </div>
           </div>
+          {editProduct && (
+            <ImageGallery
+              data={images}
+              callback={(url) => setForm((prev) => ({ ...prev, image: url }))}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

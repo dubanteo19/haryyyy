@@ -6,7 +6,7 @@ export const ProductCard: FC<Product> = ({ link, image, title }) => {
   return (
     <a href={link} target="_blank" className="rounded-3xl overflow-hidden">
       <div
-        className="relative border  bg-primary  grid grid-cols-5 
+        className="relative border  bg-primary  grid grid-cols-5 h-[250px] 
     hover:scale-105 transition-all "
       >
         <ImageContainer

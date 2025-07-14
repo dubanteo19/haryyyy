@@ -4,8 +4,12 @@ import { ProductForm } from "@/components/admin/products/ProductForm";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGoogleSheetData } from "@/hooks/useGoogleSheet";
 import { useGoogleSheetMutation } from "@/hooks/useGoogleSheetMutation";
+import { type Image } from "@/type/image";
 import type { Product } from "@/type/product";
+import { UploadIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 export type ProductSaveType = Product;
@@ -18,6 +22,11 @@ const initialForm: ProductSaveType = {
 export const ProductCreatePage = () => {
   const [form, setForm] = useState<ProductSaveType>(initialForm);
   const { mutate, loading } = useGoogleSheetMutation();
+  const {
+    data,
+    refetch,
+    loading: loadingData,
+  } = useGoogleSheetData<Image>("images");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = { ...form };
@@ -44,7 +53,7 @@ export const ProductCreatePage = () => {
             handleSubmit={handleSubmit}
           />
         </div>
-        <div className="w-full bg-gray-100 rounded-2xloverflow-hidden">
+        <div className="w-full bg-gray-100 flex flex-col justify-center  rounded-2xl overflow-hidden">
           <h2 className="text-center text-xl font-bold">Xem trước</h2>
           {form && (
             <ProductCard
@@ -56,13 +65,27 @@ export const ProductCreatePage = () => {
           )}
         </div>
       </div>
-      <Button onClick={()=>setopenUploader(true)} className="text-gray-700 mt-2">Quản lý hình ảnh</Button>
+      <Button
+        onClick={() => setopenUploader(true)}
+        className="text-gray-700 mt-2"
+      >
+        <UploadIcon />
+        Upload hình ảnh
+      </Button>
       <Dialog open={openUploader} onOpenChange={setopenUploader}>
         <DialogContent>
-          <ImageUploader />
+          <ImageUploader
+            callback={() => {
+              refetch();
+            }}
+          />
         </DialogContent>
       </Dialog>
-      <ImageGallery detail={false} callback={handleImageClick} />
+      {loadingData ? (
+        <Skeleton className="h-[300px] w-full mt-2" />
+      ) : (
+        <ImageGallery data={data} detail={false} callback={handleImageClick} />
+      )}
     </div>
   );
 };

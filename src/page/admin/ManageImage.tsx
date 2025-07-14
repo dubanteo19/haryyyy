@@ -10,11 +10,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { DeleteDialog } from "@/components/ui/deleteDialog";
+import { FullLoader } from "@/components/ui/full-loader";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGoogleSheetData } from "@/hooks/useGoogleSheet";
 import { useGoogleSheetMutation } from "@/hooks/useGoogleSheetMutation";
+import type { Image } from "@/type/image";
 import { useState } from "react";
 import { toast } from "sonner";
 export const ManageImage = () => {
-  const { mutate: deleteImage } = useGoogleSheetMutation();
+  const { mutate: deleteImage, loading: isDeleting } = useGoogleSheetMutation();
+  const { data, refetch, loading } = useGoogleSheetData<Image>("images");
   const [selectedImageId, setselectedImageId] = useState<string>("");
   const handleClickDeleteImage = (id: string) => {
     setselectedImageId(id);
@@ -30,35 +36,28 @@ export const ManageImage = () => {
       });
       toast.success("Xóa hình ảnh thành công");
       setselectedImageId("");
+      refetch();
     } catch (error) {
       console.log(error);
     }
   };
   return (
     <div className="px-4">
-      <ImageUploader />
-      <ImageGallery
-        onClickDelete={handleClickDeleteImage}
-      />
+      {isDeleting && <FullLoader />}
+      <ImageUploader callback={() => refetch()} />
+      {!loading ? (
+        <ImageGallery data={data} onClickDelete={handleClickDeleteImage} />
+      ) : (
+        <Skeleton className="h-[400px] w-full mt-5" />
+      )}
       <AlertDialog
         open={selectedImageId != ""}
         onOpenChange={() => setselectedImageId("")}
       >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Bạn chắc chưa?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Bạn đang xóa hình ảnh {selectedImageId} Một khi đã xóa thì không
-              thể khôi phục lại được
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDeleteImage}>
-              Xóa
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
+        <DeleteDialog
+          target={selectedImageId}
+          onClickConfirm={handleConfirmDeleteImage}
+        />
       </AlertDialog>
     </div>
   );
