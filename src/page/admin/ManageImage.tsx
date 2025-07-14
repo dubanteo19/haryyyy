@@ -1,14 +1,7 @@
 import { ImageGallery } from "@/components/admin/images/ImageGallery";
 import ImageUploader from "@/components/admin/images/ImageUploader";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+    AlertDialog
 } from "@/components/ui/alert-dialog";
 import { DeleteDialog } from "@/components/ui/deleteDialog";
 import { FullLoader } from "@/components/ui/full-loader";
